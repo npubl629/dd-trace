@@ -1,0 +1,88 @@
+services:
+  control-idle:
+    build:
+      context: ./control-idle
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+
+  control-healthcheck:
+    build:
+      context: ./control-healthcheck
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+    healthcheck:
+      test: curl --fail http://localhost/status || exit 1
+      start_period: 5s
+      interval: 3s
+
+  metrics-idle:
+    build:
+      context: ./metrics-idle
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+      - DD_TRACE_AGENT_URL=http://dd-agent:8126
+      - DD_RUNTIME_METRICS_ENABLED=true
+      - DD_SERVICE=metrics-idle
+      - DD_ENV=development
+      - DD_VERSION=1.0.0
+
+  metrics-healthcheck:
+    build:
+      context: ./metrics-healthcheck
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+      - DD_TRACE_AGENT_URL=http://dd-agent:8126
+      - DD_RUNTIME_METRICS_ENABLED=true
+      - DD_SERVICE=metrics-healthcheck
+      - DD_ENV=development
+      - DD_VERSION=1.0.0
+    healthcheck:
+      test: curl --fail http://localhost/status || exit 1
+      start_period: 5s
+      interval: 3s
+
+  nometrics-idle:
+    build:
+      context: ./nometrics-idle
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+      - DD_TRACE_AGENT_URL=http://dd-agent:8126
+      - DD_RUNTIME_METRICS_ENABLED=false
+      - DD_SERVICE=nometrics-idle
+      - DD_ENV=development
+      - DD_VERSION=1.0.0
+
+  nometrics-healthcheck:
+    build:
+      context: ./nometrics-healthcheck
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+      - DD_TRACE_AGENT_URL=http://dd-agent:8126
+      - DD_RUNTIME_METRICS_ENABLED=false
+      - DD_SERVICE=nometrics-healthcheck
+      - DD_ENV=development
+      - DD_VERSION=1.0.0
+    healthcheck:
+      test: curl --fail http://localhost/status || exit 1
+      start_period: 5s
+      interval: 3s
+
+  dd-agent:
+    image: gcr.io/datadoghq/agent:7
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SITE=datadoghq.com
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    ports:
+      - "8126:8126" # APM port
