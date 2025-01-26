@@ -10,7 +10,9 @@ services:
       - DD_SERVICE=control
       - DD_ENV=development
       - DD_VERSION=1.0.0
-      - DOTNET_PerfMapEnabled=3
+      - DOTNET_PerfMapEnabled=1
+      - DOTNET_EnableEventLog=1
+      - DOTNET_EnableWriteXorExecute=0
     pid: host
     cap_add:
       - SYS_ADMIN
@@ -31,7 +33,9 @@ services:
       - DD_SERVICE=fast-timer
       - DD_ENV=development
       - DD_VERSION=1.0.0
-      - DOTNET_PerfMapEnabled=3
+      - DOTNET_PerfMapEnabled=1
+      - DOTNET_EnableEventLog=1
+      - DOTNET_EnableWriteXorExecute=0
     pid: host
     cap_add:
       - SYS_ADMIN
