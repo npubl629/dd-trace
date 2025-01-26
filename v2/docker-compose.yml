@@ -1,0 +1,35 @@
+services:
+  control:
+    build:
+      context: ./control
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=http://*:80
+      - DD_TRACE_AGENT_URL=http://dd-agent:8126
+      - DD_RUNTIME_METRICS_ENABLED=true
+      - DD_SERVICE=control
+      - DD_ENV=development
+      - DD_VERSION=1.0.0
+      - DOTNET_PerfMapEnabled=3
+    pid: host
+    cap_add:
+      - SYS_ADMIN
+      - SYS_PTRACE
+    volumes:
+      - /sys:/sys
+      - /proc:/proc
+    privileged: true
+
+  dd-agent:
+    image: gcr.io/datadoghq/agent:7
+    environment:
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_SITE=datadoghq.com
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc/:/host/proc/:ro
+      - /sys/fs/cgroup/:/host/sys/fs/cgroup:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    ports:
+      - "8126:8126" # APM port
