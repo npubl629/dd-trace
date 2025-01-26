@@ -21,8 +21,9 @@ public static class DDPatch
 
         _overrideDelay = delay;
 
-        Assembly assembly = Assembly.GetAssembly(typeof(Datadog.Trace.Tracer))!;
-        var RuntimeMetricsWriter = assembly.GetType("Datadog.Trace.RuntimeMetrics.RuntimeMetricsWriter");
+        var allAssemblies = AppDomain.CurrentDomain.GetAssemblies().OrderBy(x => x.GetName().ToString()).ToList();
+        var DatadogTrace = allAssemblies.Single(x => x.FullName == "Datadog.Trace, Version=3.9.0.0, Culture=neutral, PublicKeyToken=def86d061d0d2eeb");
+        var RuntimeMetricsWriter = DatadogTrace.GetType("Datadog.Trace.RuntimeMetrics.RuntimeMetricsWriter");
 
         var constructors = RuntimeMetricsWriter.GetDeclaredConstructors();
         _publicConstructor = constructors.Single(x =>
@@ -33,7 +34,6 @@ public static class DDPatch
 
         _initializeListenerFunc = RuntimeMetricsWriter.GetField("InitializeListenerFunc", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
 
-        bool b = true;
         var replacement = typeof(DDPatch).GetMethod(nameof(ReplacementConstructor), BindingFlags.Static | BindingFlags.NonPublic);
 
         var harmony = new Harmony("Datadog.Trace");
