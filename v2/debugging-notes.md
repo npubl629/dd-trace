@@ -8,8 +8,14 @@ mkdir -p /tmp/home
 cd /tmp/home
 
 apt update
-apt install -y curl lldb linux-perf htop
+apt install -y curl lldb procps htop vim
 
+# Install perfcollect
+curl -OL https://aka.ms/perfcollect
+chmod +x perfcollect
+./perfcollect install
+
+# Install dotnet sdk
 curl https://download.visualstudio.microsoft.com/download/pr/a91ddad4-a3c2-4303-9efc-1ca6b7af850c/be1763df9211599df1cf1c6f504b3c41/dotnet-sdk-8.0.405-linux-x64.tar.gz -o dotnet.tar.gz
 mkdir -p /tmp/dotnet && tar -xzf dotnet.tar.gz -C /tmp/dotnet && mv dotnet.tar.gz /tmp/dotnet/dotnet.tar.gz
 
@@ -18,9 +24,10 @@ export HOME=/tmp/home
 export DOTNET_ROOT=/tmp/dotnet
 export PATH=/tmp/dotnet:/tmp/home/.dotnet/tools:$PATH
 
-# Install debugging tools
+# Install dotnet debugging tools
 dotnet tool install --global dotnet-debugger-extensions
 dotnet tool install --global dotnet-dump
+dotnet tool install --global dotnet-symbol
 
 # Accept EULA for LLDB SOS extensions
 dotnet-debugger-extensions install
@@ -71,6 +78,8 @@ Capture perf trace of a thread using `perf`, and use [hotspot](https://github.co
 ```bash
 perf record -p 458027 -t 458087 sleep 180
 perf report
+
+./perfcollect collect sampleTrace -pid 2658863
 ```
 
 ## Useful debugging documentation ##
@@ -78,4 +87,5 @@ perf report
 - https://learn.microsoft.com/en-us/dotnet/core/runtime-config/debugging-profiling
 - https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-debugger-extensions
 - https://learn.microsoft.com/en-us/dotnet/core/diagnostics/debugger-extensions#syntax
+- https://learn.microsoft.com/en-us/dotnet/core/diagnostics/trace-perfcollect-lttng
 - https://github.com/dotnet/diagnostics/blob/main/documentation/FAQ.md
