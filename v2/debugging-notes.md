@@ -31,6 +31,12 @@ dotnet tool install --global dotnet-symbol
 
 # Accept EULA for LLDB SOS extensions
 dotnet-debugger-extensions install
+
+# Download symbol files for perfcollect
+mkdir net8symbols
+dotnet symbol --symbols --output net8symbols /usr/share/dotnet/shared/Microsoft.NETCore.App/8.0.12/lib*.so
+dotnet symbol --symbols --output net8symbols /usr/share/dotnet/shared/Microsoft.NETCore.App/8.0.12/*.dll
+cp /tmp/home/net8symbols/* /usr/share/dotnet/shared/Microsoft.NETCore.App/8.0.12
 ```
 
 ## Any time you open a shell ##
