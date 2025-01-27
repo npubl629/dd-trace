@@ -95,3 +95,9 @@ perf report
 - https://learn.microsoft.com/en-us/dotnet/core/diagnostics/debugger-extensions#syntax
 - https://learn.microsoft.com/en-us/dotnet/core/diagnostics/trace-perfcollect-lttng
 - https://github.com/dotnet/diagnostics/blob/main/documentation/FAQ.md
+
+## Github Issues ##
+- https://github.com/DataDog/dd-trace-dotnet/issues/5862
+- https://github.com/dotnet/runtime/issues/43985
+- https://github.com/dotnet/runtime/issues/49804
+- https://github.com/dotnet/runtime/issues/111368
